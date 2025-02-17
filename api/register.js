@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const mongo_pass = process.env.MONGO_PASS;
+
 mongoose.connect(`mongodb+srv://extrapublicbus:${mongo_pass}@cluster0.8otpg.mongodb.net/`, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const User = mongoose.model('users', new mongoose.Schema({
