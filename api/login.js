@@ -1,10 +1,11 @@
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 
 const mongo_pass = process.env.MONGO_PASS;
-
 mongoose.connect(`mongodb+srv://extrapublicbus:${mongo_pass}@cluster0.8otpg.mongodb.net/`, { useNewUrlParser: true, useUnifiedTopology: true });
 
-const User = mongoose.model('users', new mongoose.Schema({
+// הגדרת מודל משתמש
+const User = mongoose.model('User', new mongoose.Schema({
   username: String,
   password: String
 }));
@@ -14,11 +15,14 @@ module.exports = async (req, res) => {
     const { username, password } = req.body;
 
     try {
-      const user = await User.findOne({ username, password });
+      // חפש משתמש עם שם המשתמש שנשלח בבקשה
+      const user = await User.findOne({ username });
 
-      if (user) {
+      if (user && await bcrypt.compare(password, user.password)) {
+        // אם הסיסמה נכונה
         return res.status(200).json({ success: true });
       } else {
+        // אם הסיסמה לא נכונה או המשתמש לא נמצא
         return res.status(400).json({ success: false, message: 'Invalid credentials' });
       }
     } catch (err) {
